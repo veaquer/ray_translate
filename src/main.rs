@@ -5,6 +5,7 @@ use tokio::runtime::Runtime;
 
 mod app;
 const APP_NAME: &str = "Ray Translate";
+
 fn main() -> eframe::Result {
     env_logger::init();
 
@@ -16,17 +17,14 @@ fn main() -> eframe::Result {
             .with_always_on_top(),
         ..Default::default()
     };
-    let rt = Runtime::new().unwrap();
 
-    rt.block_on(async {
-        eframe::run_native(
-            APP_NAME,
-            options,
-            Box::new(|cc| {
-                egui_extras::install_image_loaders(&cc.egui_ctx);
+    eframe::run_native(
+        APP_NAME,
+        options,
+        Box::new(|cc| {
+            egui_extras::install_image_loaders(&cc.egui_ctx);
 
-                Ok(Box::<MainWindow>::default())
-            }),
-        )
-    })
+            Ok(Box::<MainWindow>::default())
+        }),
+    )
 }

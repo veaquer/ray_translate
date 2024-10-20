@@ -1,12 +1,13 @@
-use futures::executor::block_on;
 use std::hash::{Hash, Hasher};
 
 use egui::{
-    Align, Align2, Area, Color32, Direction, FontData, FontDefinitions, FontFamily, Frame, Id,
-    Layout, Margin, Memory, RichText, ScrollArea, Stroke, Style, TextStyle, Vec2, ViewportCommand,
+    Align2, Area, Color32, FontDefinitions, FontFamily, Frame, Id, RichText, ScrollArea, Style,
+    TextStyle, Vec2,
 };
 
-use super::utils::{parse_args, translate_from_args};
+use crate::app::utils::translate;
+
+use super::utils::{parse_args, render_ansi_text};
 
 pub struct MainWindow {
     prompt: String,
@@ -36,11 +37,21 @@ impl eframe::App for MainWindow {
             TextStyle::Name("big".into()),
             egui::FontId::new(24.0, FontFamily::Proportional),
         );
-        style.text_styles.insert(
-            TextStyle::Name("medium".into()),
-            egui::FontId::new(18.0, FontFamily::Proportional),
+        let mut fonts = FontDefinitions::default();
+        fonts.font_data.insert(
+            "agave".to_owned(),
+            egui::FontData::from_static(include_bytes!(
+                "/usr/share/fonts/AgaveNerdFont-Regular.ttf"
+            )),
         );
+        fonts
+            .families
+            .get_mut(&FontFamily::Proportional)
+            .unwrap()
+            .insert(0, "agave".to_owned());
+        ctx.set_fonts(fonts);
         ctx.set_style(style);
+
         let mut area_rect = None;
 
         Area::new(hashed_id)
@@ -61,12 +72,18 @@ impl eframe::App for MainWindow {
                     area_rect = Some(ui.min_rect());
                     let resp_area = ScrollArea::vertical();
                     resp_area.show(ui, |ui| {
-                        ui.label(RichText::new(&self.response).size(20.));
+                        render_ansi_text(ui, &self.response);
                     });
                 });
             });
         ctx.input(|i| {
-            if i.pointer.any_click() || i.key_pressed(egui::Key::Escape) {
+            if i.key_pressed(egui::Key::Escape) {
+                let ctx = ctx.clone();
+                std::thread::spawn(move || {
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                });
+            }
+            if i.pointer.any_click() {
                 if let Some(rect) = area_rect {
                     if !rect.contains(i.pointer.interact_pos().unwrap_or_default()) {
                         let ctx = ctx.clone();
@@ -77,18 +94,23 @@ impl eframe::App for MainWindow {
                 }
             }
             if i.key_pressed(egui::Key::Enter) {
-                let args = parse_args(&self.prompt);
-                println!("args: {:#?}", args);
-                let result_future = translate_from_args(args);
+                let args = match parse_args(&self.prompt) {
+                    Ok(args) => args,
+                    Err(e) => {
+                        self.response = e.to_string();
+                        return;
+                    }
+                };
 
-                let result = block_on(result_future);
+                let result = translate(args);
                 match result {
-                    Ok(response) => {
+                    Ok(resp) => {
                         self.prompt.clear();
-                        self.response = response;
+
+                        self.response = resp;
                     }
                     Err(e) => {
-                        self.response = format!("Error: {}", e);
+                        self.response = e.to_string();
                     }
                 }
             }
