@@ -1,7 +1,4 @@
 use app::main_window::MainWindow;
-use eframe::WindowAttributes;
-use egui::Vec2;
-use tokio::runtime::Runtime;
 
 mod app;
 const APP_NAME: &str = "Ray Translate";

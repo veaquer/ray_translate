@@ -1,8 +1,8 @@
 use std::hash::{Hash, Hasher};
 
 use egui::{
-    Align2, Area, Color32, FontDefinitions, FontFamily, Frame, Id, RichText, ScrollArea, Style,
-    TextStyle, Vec2,
+    Align2, Area, Color32, FontDefinitions, FontFamily, Frame, Id, ScrollArea, Style, TextStyle,
+    Vec2,
 };
 
 use crate::app::utils::translate;
