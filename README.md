@@ -7,7 +7,7 @@ __**ray_translate**__ - is something like translator in raycast.. but with worst
 
 ## Archlinux
 ```
-sudo pacman -S ray_translate
+yay -S ray_translate
 ```
 
 ## Other distros
