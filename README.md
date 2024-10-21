@@ -3,9 +3,17 @@ __**ray_translate**__ - is something like translator in raycast.. but with worst
 
 ![image](https://github.com/user-attachments/assets/9128c58a-4e77-4946-9c0e-c76973ceb62b)
 
+# Installation
 
+## Archlinux
+```
+sudo pacman -S ray_translate
+```
 
-# Dependencies
-`translate-shell`
+## Other distros
+```
+git clone https://github.com/veaquer/ray_translate.git
+cd ray_translate
+makepkg -si
+```
 
-Archlinux - `sudo pacman -S translate-shell`
