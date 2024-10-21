@@ -1,7 +1,7 @@
 use core::str;
 use std::process::{Command, Output};
 
-use egui::{RichText, Ui};
+use egui::{Color32, RichText, Ui};
 const TEXT_SIZE: f32 = 24.;
 
 #[derive(Debug)]
@@ -47,24 +47,24 @@ pub fn translate(tr: Translate) -> Result<String, String> {
         Err(error_message.to_string())
     }
 }
+
 pub fn render_ansi_text(ui: &mut Ui, text: &str) {
     if !text.contains('\x1b') {
-        // If no ANSI codes are detected, display the plain text
-        ui.label(RichText::new(text).size(TEXT_SIZE));
+        ui.label(
+            RichText::new(text)
+                .size(TEXT_SIZE)
+                .color(Color32::from_rgb(205, 214, 244)),
+        );
         return;
     }
 
     let mut is_bold = false;
     let mut is_underline = false;
-    let mut buffer = String::new();
+    let mut full_text = String::new();
 
     let mut parts = text.split('\x1b').peekable();
 
     while let Some(part) = parts.next() {
-        if part.is_empty() {
-            continue;
-        }
-
         if let Some((code, rest)) = part.split_once('m') {
             match code {
                 "[1" => is_bold = true,
@@ -74,24 +74,23 @@ pub fn render_ansi_text(ui: &mut Ui, text: &str) {
                 _ => {}
             }
 
-            buffer.push_str(rest);
+            full_text.push_str(rest);
         } else {
-            buffer.push_str(part);
-        }
-
-        if parts.peek().is_none() {
-            let mut rich_text = RichText::new(&buffer).size(TEXT_SIZE);
-
-            if is_bold {
-                rich_text = rich_text.strong();
-            }
-
-            if is_underline {
-                rich_text = rich_text.underline();
-            }
-
-            ui.label(rich_text);
-            buffer.clear();
+            full_text.push_str(part);
         }
     }
+
+    let mut rich_text = RichText::new(&full_text)
+        .size(TEXT_SIZE)
+        .color(Color32::from_rgb(205, 214, 244));
+
+    if is_bold {
+        rich_text = rich_text.strong();
+    }
+
+    if is_underline {
+        rich_text = rich_text.underline();
+    }
+
+    ui.label(rich_text);
 }
