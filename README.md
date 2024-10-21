@@ -1,7 +1,8 @@
 # Translate app written in Rust ( Works only in linux )
 __**ray_translate**__ - quick acess to translator(obviously if you use shortcut).
 
-![image](https://github.com/user-attachments/assets/9128c58a-4e77-4946-9c0e-c76973ceb62b)
+![ray_translator_showcase](https://github.com/user-attachments/assets/e99ee935-b713-40ab-b370-c7103f0bcc94)
+
 
 # Installation
 
