@@ -1,5 +1,4 @@
 use app::main_window::MainWindow;
-use eframe::Error;
 use single_instance::SingleInstance;
 
 mod app;
