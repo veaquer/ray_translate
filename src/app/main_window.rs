@@ -83,7 +83,7 @@ impl eframe::App for MainWindow {
                             mem.request_focus(input_id);
                         });
                         area_rect = Some(ui.min_rect());
-
+                        ui.add_space(10.);
                         ScrollArea::vertical()
                             .animated(true)
                             .auto_shrink(Vec2b::new(true, false))
