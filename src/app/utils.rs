@@ -2,6 +2,7 @@ use core::str;
 use std::process::{Command, Output};
 
 use egui::{RichText, Ui};
+const TEXT_SIZE: f32 = 24.;
 
 #[derive(Debug)]
 pub struct Translate<'a> {
@@ -50,7 +51,7 @@ pub fn translate(tr: Translate) -> Result<String, String> {
 pub fn render_ansi_text(ui: &mut Ui, text: &str) {
     if !text.contains('\x1b') {
         // If no ANSI codes are detected, display the plain text
-        ui.label(RichText::new(text).size(20.));
+        ui.label(RichText::new(text).size(TEXT_SIZE));
         return;
     }
 
@@ -77,7 +78,7 @@ pub fn render_ansi_text(ui: &mut Ui, text: &str) {
             buffer.push_str(part);
         }
 
-        let mut rich_text = RichText::new(&buffer).size(20.);
+        let mut rich_text = RichText::new(&buffer).size(TEXT_SIZE);
 
         if is_bold {
             rich_text = rich_text.strong();
