@@ -47,7 +47,6 @@ pub fn translate(tr: Translate) -> Result<String, String> {
         Err(error_message.to_string())
     }
 }
-
 pub fn render_ansi_text(ui: &mut Ui, text: &str) {
     if !text.contains('\x1b') {
         // If no ANSI codes are detected, display the plain text
@@ -59,7 +58,9 @@ pub fn render_ansi_text(ui: &mut Ui, text: &str) {
     let mut is_underline = false;
     let mut buffer = String::new();
 
-    for part in text.split('\x1b') {
+    let mut parts = text.split('\x1b').peekable();
+
+    while let Some(part) = parts.next() {
         if part.is_empty() {
             continue;
         }
@@ -78,17 +79,19 @@ pub fn render_ansi_text(ui: &mut Ui, text: &str) {
             buffer.push_str(part);
         }
 
-        let mut rich_text = RichText::new(&buffer).size(TEXT_SIZE);
+        if parts.peek().is_none() {
+            let mut rich_text = RichText::new(&buffer).size(TEXT_SIZE);
 
-        if is_bold {
-            rich_text = rich_text.strong();
+            if is_bold {
+                rich_text = rich_text.strong();
+            }
+
+            if is_underline {
+                rich_text = rich_text.underline();
+            }
+
+            ui.label(rich_text);
+            buffer.clear();
         }
-
-        if is_underline {
-            rich_text = rich_text.underline();
-        }
-
-        ui.label(rich_text);
-        buffer.clear();
     }
 }
