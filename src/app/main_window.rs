@@ -1,8 +1,8 @@
 use std::hash::{Hash, Hasher};
 
 use egui::{
-    Align2, Area, Color32, FontDefinitions, FontFamily, Frame, Id, ScrollArea, Style, TextStyle,
-    Vec2,
+    Align, Align2, Area, Color32, Direction, FontDefinitions, FontFamily, Frame, Id, Layout,
+    ScrollArea, Style, TextStyle, Vec2, Vec2b,
 };
 
 use crate::app::utils::translate;
@@ -70,10 +70,15 @@ impl eframe::App for MainWindow {
                         mem.request_focus(input_id);
                     });
                     area_rect = Some(ui.min_rect());
-                    let resp_area = ScrollArea::vertical();
-                    resp_area.show(ui, |ui| {
-                        render_ansi_text(ui, &self.response);
-                    });
+
+                    ScrollArea::vertical()
+                        .animated(true)
+                        .auto_shrink(Vec2b::new(true, false))
+                        .stick_to_right(true)
+                        .show(ui, |ui| {
+                            ui.set_width(600.);
+                            render_ansi_text(ui, &self.response);
+                        });
                 });
             });
         ctx.input(|i| {
