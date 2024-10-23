@@ -12,9 +12,4 @@ yay -S ray_translate
 ```
 
 ## Other distros
-```
-git clone https://github.com/veaquer/ray_translate.git
-cd ray_translate
-makepkg -si
-```
-
+install translate-shell and build repo, then set shortcut etc.
